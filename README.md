@@ -124,3 +124,4 @@ The application uses PGVector for storing document embeddings. The schema includ
 ## Contributing
 
 Feel free to submit issues and enhancement requests!
+# springboot-rag-example
