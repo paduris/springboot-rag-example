@@ -6,75 +6,49 @@ import dev.langchain4j.model.openai.OpenAiChatModel;
 import dev.langchain4j.model.openai.OpenAiEmbeddingModel;
 import dev.langchain4j.store.embedding.EmbeddingStore;
 import dev.langchain4j.store.embedding.pgvector.PgVectorEmbeddingStore;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import javax.sql.DataSource;
+import jakarta.sql.DataSource;
 
 @Configuration
 public class RagConfig {
 
-    @Value("${openai.api-key}")
-    private String openAiApiKey;
+    private final OpenAIProperties openAIProperties;
+    private final AppProperties appProperties;
 
-    @Value("${openai.model.chat.name}")
-    private String chatModelName;
-
-    @Value("${openai.model.chat.temperature}")
-    private double chatTemperature;
-
-    @Value("${openai.model.embedding.name}")
-    private String embeddingModelName;
-
-    @Value("${app.db.host}")
-    private String dbHost;
-
-    @Value("${app.db.port}")
-    private int dbPort;
-
-    @Value("${app.db.name}")
-    private String dbName;
-
-    @Value("${app.db.user}")
-    private String dbUser;
-
-    @Value("${app.db.password}")
-    private String dbPassword;
-
-    @Value("${app.db.table}")
-    private String dbTable;
-
-    @Value("${app.db.embedding.dimension}")
-    private int embeddingDimension;
+    public RagConfig(OpenAIProperties openAIProperties, AppProperties appProperties) {
+        this.openAIProperties = openAIProperties;
+        this.appProperties = appProperties;
+    }
 
     @Bean
     public OpenAiChatModel openAiChatModel() {
         return OpenAiChatModel.builder()
-                .apiKey(openAiApiKey)
-                .modelName(chatModelName)
-                .temperature(chatTemperature)
+                .apiKey(openAIProperties.getApiKey())
+                .modelName(openAIProperties.getModel().getChat().getName())
+                .temperature(openAIProperties.getModel().getChat().getTemperature())
                 .build();
     }
 
     @Bean
     public EmbeddingModel embeddingModel() {
         return OpenAiEmbeddingModel.builder()
-                .apiKey(openAiApiKey)
-                .modelName(embeddingModelName)
+                .apiKey(openAIProperties.getApiKey())
+                .modelName(openAIProperties.getModel().getEmbedding().getName())
                 .build();
     }
 
     @Bean
     public EmbeddingStore<TextSegment> embeddingStore(DataSource dataSource) {
         return PgVectorEmbeddingStore.builder()
-                .host(dbHost)
-                .port(dbPort)
-                .database(dbName)
-                .user(dbUser)
-                .password(dbPassword)
-                .table(dbTable)
-                .dimension(embeddingDimension)
+                .host(appProperties.getDb().getHost())
+                .port(appProperties.getDb().getPort())
+                .database(appProperties.getDb().getName())
+                .user(appProperties.getDb().getUser())
+                .password(appProperties.getDb().getPassword())
+                .table(appProperties.getDb().getTable())
+                .dimension(appProperties.getDb().getEmbedding().getDimension())
                 .build();
     }
 }

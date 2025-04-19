@@ -68,32 +68,46 @@ public class RagService {
             // Create embedding for the question
             Embedding questionEmbedding = embeddingModel.embed(question).content();
 
-            // Find relevant segments
-            List<EmbeddingMatch<TextSegment>> relevantMatches = embeddingStore.findRelevant(questionEmbedding, 3);
-            List<TextSegment> relevantSegments = relevantMatches.stream()
-                    .map(EmbeddingMatch::embedded)
-                    .toList();
+            // Find relevant segments with higher number of matches and relevance score
+            List<EmbeddingMatch<TextSegment>> relevantMatches = embeddingStore.findRelevant(
+                questionEmbedding,
+                5,  // Increased from 3 to 5 for more context
+                0.7 // Minimum relevance score threshold
+            );
 
-            if (relevantSegments.isEmpty()) {
+            if (relevantMatches.isEmpty()) {
                 log.warning("No relevant context found for question: " + question);
-                return "I don't have enough context to answer this question accurately.";
+                return "I don't have enough context to answer this question accurately. Please try rephrasing your question or provide more specific details.";
             }
 
-            // Build context from relevant segments
-            String context = relevantSegments.stream()
-                    .map(TextSegment::text)
-                    .reduce("", (a, b) -> a + "\n" + b);
+            // Build context from relevant segments with metadata
+            StringBuilder contextBuilder = new StringBuilder();
+            for (int i = 0; i < relevantMatches.size(); i++) {
+                EmbeddingMatch<TextSegment> match = relevantMatches.get(i);
+                TextSegment segment = match.embedded();
+                double relevanceScore = match.score();
+                contextBuilder.append("Segment ").append(i + 1)
+                        .append(" (Relevance: ").append(String.format("%.2f", relevanceScore))
+                        .append("):\n")
+                        .append(segment.text())
+                        .append("\n\n");
+            }
 
-            // Generate response using chat model with context
-            String prompt = String.format("""
-                    Based on the following context, please answer the question. 
-                    If you cannot answer the question based on the context, say so.
-                    
-                    Context:
-                    %s
-                    
-                    Question: %s
-                    """, context, question);
+            // Generate response using chat model with improved prompt
+            String prompt = String.format(
+                "You are a helpful AI assistant. Answer the question based on the provided context.\n" +
+                "Be specific and detailed in your response, using information directly from the context.\n" +
+                "If the context doesn't contain enough information to fully answer the question, explain what you can answer\n" +
+                "and what additional information would be needed.\n\n" +
+                "Context (ordered by relevance):\n%s\n" +
+                "Question: %s\n\n" +
+                "Instructions:\n" +
+                "1. Use only the information from the context to answer the question\n" +
+                "2. If the context doesn't fully answer the question, acknowledge this and explain what you can answer\n" +
+                "3. Be clear and concise in your response\n" +
+                "4. If you need to make assumptions, state them explicitly\n\n" +
+                "Answer:\n",
+                contextBuilder.toString(), question);
 
             String response = chatModel.generate(prompt);
             log.info("Generated response for question: " + question);

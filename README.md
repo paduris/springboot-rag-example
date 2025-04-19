@@ -95,6 +95,20 @@ Content-Type: application/json
 "Your question here"
 ```
 
+## Chat UI
+
+The application includes a modern React-based chat interface that allows users to:
+- Upload documents for processing
+- Ask questions about the uploaded documents
+- View chat history with AI responses
+- See relevance scores for document segments used in responses
+
+### Features
+- Real-time chat interface with message history
+- Document upload with progress indicator
+- Markdown rendering for better response formatting
+- Mobile-responsive design
+
 ## Testing
 
 Run the tests using:
@@ -115,13 +129,40 @@ The application follows a standard Spring Boot architecture:
 - `Model`: Data models and entities
 - `Config`: Configuration classes for OpenAI and vector store setup
 
+### Frontend Architecture
+- React with TypeScript for type safety
+- Material-UI components for consistent design
+- WebSocket integration for real-time updates
+- Responsive layout for mobile and desktop
+
 ## Vector Store Schema
 
 The application uses PGVector for storing document embeddings. The schema includes:
 - `documents` table for storing document metadata
 - `document_embeddings` table for storing vector embeddings
 
+## Enhanced RAG Features
+
+The application implements several improvements to the basic RAG approach:
+- Minimum relevance score threshold (0.7) for better context quality
+- Top 5 most relevant segments used for context
+- Relevance scores included in prompts for better AI responses
+- Clear instructions in prompts for handling insufficient context
+
 ## Contributing
 
 Feel free to submit issues and enhancement requests!
-# springboot-rag-example
+
+## Screenshots
+
+### Chat Interface
+![Chat Interface](/screenshots/chat-interface.png)
+*The main chat interface showing conversation history and document upload*
+
+### Document Upload
+![Document Upload](/screenshots/document-upload.png)
+*Document upload interface with progress indicator*
+
+### Query Response
+![Query Response](/screenshots/query-response.png)
+*Example of an AI response with relevant context segments*

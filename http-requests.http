@@ -3,10 +3,10 @@ POST http://localhost:8080/api/rag/documents
 Content-Type: multipart/form-data; boundary=boundary
 
 --boundary
-Content-Disposition: form-data; name="file"; filename="doc.pdf"
+Content-Disposition: form-data; name="file"; filename="Summary of Rights 9.11.18.pdf"
 Content-Type: application/pdf
 
-< ./src/main/resources/sample-data/doc.pdf
+< ./src/main/resources/sample-data/Summary of Rights 9.11.18.pdf
 --boundary--
 
 ### Query the document
@@ -14,5 +14,5 @@ POST http://localhost:8080/api/rag/query
 Content-Type: application/json
 
 {
-    "question": "What is the main topic discussed in the PDF?"
+    "question": "activities subject to the Packers and Stockyards Act, 1921"
 }
