@@ -1,0 +1,14 @@
+[
+  {
+    "title": "Introduction to RAG",
+    "content": "Retrieval-Augmented Generation (RAG) is a technique that combines the power of large language models with the ability to retrieve relevant information from a knowledge base. This approach enhances the model's responses by grounding them in specific, retrievable content rather than relying solely on the model's pre-trained knowledge."
+  },
+  {
+    "title": "Benefits of RAG",
+    "content": "RAG offers several key benefits: 1) Up-to-date information: By retrieving from a current knowledge base, responses reflect the latest information. 2) Verifiable responses: Each response can be traced back to source documents. 3) Domain specificity: The system can be tailored to specific domains by curating the knowledge base."
+  },
+  {
+    "title": "RAG Architecture",
+    "content": "A RAG system typically consists of three main components: 1) An embedding model that converts text into vector representations. 2) A vector store that efficiently indexes and retrieves these embeddings. 3) A language model that generates responses based on the retrieved context and user queries."
+  }
+]
